@@ -1,0 +1,285 @@
+<!doctype html>
+<html class="no-js" lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layout/head::head"></head>
+
+<body class="home-4">
+
+	<header th:replace="layout/header::header"></header>
+	<div id="chieucao"></div>
+	<!-- header-area-end -->
+	<!-- slider-group-start -->
+
+	<div class="breadcrumbs-area mb-70">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="breadcrumbs-menu">
+						<ul>
+							<li><a href="#">Trang chủ</a></li>
+							<li><a href="#" class="active">Thanh toán</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- breadcrumbs-area-end -->
+	<!-- entry-header-area-start -->
+
+	<!-- entry-header-area-end -->
+	<!-- coupon-area-area-start -->
+
+	<!-- coupon-area-area-end -->
+	<!-- checkout-area-start -->
+	<div class="checkout-area mb-70">
+		<div class="container">
+			<div class="row">
+				<div class="col-12">
+					<form th:object="${order}" method="post" th:action="@{postCheckout}">
+						<div class="row">
+							<input type="hidden" placeholder="" th:field="*{sumMoney}">
+							<div class="col-lg-6 col-md-12 col-12">
+								<div class="checkbox-form">
+									<h3>Chi tiết đơn hàng</h3>
+									<div class="row">
+
+										<div class="col-lg-12 col-md-12 col-12">
+											<div class="checkout-form-list">
+												<label>Họ tên </label>
+												<input type="text" placeholder="" th:field="*{user.fullName}">
+											</div>
+										</div>
+										<div class="col-lg-12 col-md-12 col-12">
+											<div class="checkout-form-list">
+												<label>Địa chỉ <span class="required">*</span></label>
+												<input type="text" th:placeholder="${order.user.address}"
+													th:field="*{addressShip}">
+											</div>
+										</div>
+										<div class="col-lg-12 col-md-12 col-12">
+											<div class="checkout-form-list">
+												<label>Số điện thoại<span class="required">*</span></label>
+												<input type="text" 
+													th:field="*{phone}">
+													<span class="text-danger" th:text="${errorMessage}"></span>
+											</div>
+										</div>
+										<div class="col-lg-12 col-md-12 col-12">
+											<div class="checkout-form-list">
+												<label>Mã giảm giá</label>
+												<input type="text" name="discount_code" id="nameCode">
+											</div>
+										</div>
+										<div class="col-lg-12 col-md-12 col-12 scroll">
+
+											<div class="discountCode" th:each="list : ${listDiscount}">
+												<div>
+													<div>
+														<span class="quantity-discount">Giảm</span><span
+															class="money-discount" th:text="${#numbers.formatDecimal(list.money, 0, 'POINT', 0, 'COMMA')+ ' đ'}"></span>
+													</div>
+													<div class="quantity-discount">
+														Số lượng còn: <span th:text="${list.quantity}"></span>
+													</div>
+												</div>
+												<div class="nameCode" th:text="${list.nameCode}"></div>
+												<div>
+													<button type="button" class="btn-discount">Dùng</button>
+												</div>
+											</div>
+										</div>
+
+										<div class="col-lg-12 col-md-12 col-12">
+											<div class="checkout-form-list">
+												<label>Phương thức thanh toán<span class="required">*</span></label>
+
+												<select id="methodPaySelect" th:field="*{methodPay.id}" onchange="handleSelectChange()">
+													<option th:each="pay : ${listPay}" th:value="${pay.id}"
+														th:text="${pay.payName}">
+													</option>
+												</select>
+											</div>
+										</div>
+									</div>
+									<div class="different-address">
+
+										<div class="order-notes">
+											<div class="checkout-form-list">
+												<label>Ghi chú</label>
+												<textarea placeholder="..." rows="10" cols="30" th:field="*{note}"
+													id="checkout-mess"></textarea>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-6 col-md-12 col-12">
+								<div class="your-order">
+									<h3>Đơn hàng của bạn</h3>
+									<div class="your-order-table table-responsive">
+										<table>
+											<thead>
+												<tr>
+													<th class="product-name">Sản phẩm</th>
+													<th class="product-total">Số lượng</th>
+													<th class="product-total">Tổng</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr class="cart_item" th:each="cartItem : ${listCartItem}">
+													<td class="product-name">
+														<span th:text="${cartItem.book.bookName}"></span>
+													</td>
+													<td>
+														<strong class="product-quantity"> x <span
+																th:text="${cartItem.quantity}"></span></strong>
+													</td>
+													<td class="product-total">
+														<span class="amount"
+															th:text="${#numbers.formatDecimal( cartItem.quantity * cartItem.book.priceSale, 0, 'POINT', 0, 'COMMA')+ ' đ'}"></span>
+													</td>
+												</tr>
+
+											</tbody>
+											<tfoot>
+												<tr class="cart-subtotal">
+													<th>Mã giảm giá</th>
+													<td></td>
+													<td><span class="discount-code"></span>
+													</td>
+												</tr>
+												<tr class="cart-subtotal">
+													<th>Tổng tiền</th>
+													<td></td>
+													<td><span class="amount" id="moneyOld"
+															th:text="${#numbers.formatDecimal(order.sumMoney, 0, 'POINT', 0, 'COMMA')+ ' đ'}"></span>
+													</td>
+												</tr>
+												<tr class="shipping">
+													<th>Shipping</th>
+													<td></td>
+													<td>
+														<ul>
+
+															<li>
+																<input type="radio" checked>
+																<label>Miễn phí vận chuyển:</label>
+															</li>
+															<li></li>
+														</ul>
+													</td>
+												</tr>
+												<tr class="order-total">
+													<th>Tiền phải trả</th>
+													<td></td>
+													<td><strong><span class="amount" id="totalMoney"
+																th:text="${#numbers.formatDecimal(order.sumMoney, 0, 'POINT', 0, 'COMMA')+ ' đ'}"></span></strong>
+													</td>
+												</tr>
+											</tfoot>
+										</table>
+									</div>
+									<div class="payment-method">
+										<div class="payment-accordion">
+											<div class="collapses-group">
+												<div class="panel-group" id="accordion" role="tablist"
+													aria-multiselectable="true">
+
+													<div class="panel panel-default">
+														<div class="panel-heading" role="tab" id="headingThree">
+															<h4 class="panel-title">
+																<a class="collapsed" role="button"
+																	data-bs-toggle="collapse"
+																	data-bs-parent="#accordion" href="#collapseThree"
+																	aria-expanded="false" aria-controls="collapseThree">
+																	PayPal <img th:src="@{/fe/img/2.png}"
+																		alt="payment" />
+																</a>
+															</h4>
+														</div>
+														<div id="collapseThree" class="panel-collapse collapse"
+															role="tabpanel" aria-labelledby="headingThree">
+															<div class="panel-body">
+																<p>Pay via PayPal; you can pay with your credit card if
+																	you don’t have a PayPal account.</p>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="order-button-payment">
+											<input type="submit" value="Đặt hàng">
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<footer th:replace="layout/footer::footer"></footer>
+	<!-- all js here -->
+	<!-- jquery latest version -->
+	<div th:replace="layout/js::js"></div>
+	<script>
+		$('.ip').change((e) => {
+			let value = e.target.value;
+			let cartId = e.target.id;
+			let data = {quantity: parseInt(value)}
+			$.ajax({
+				type: "PUT",
+				contentType: "application/json",
+				url: `/cartItemApi/${cartId}`,
+				data: JSON.stringify(data),
+				dataType: 'json',
+				cache: false,
+				timeout: 600000,
+				success: function (data) {
+					console.log("SUCCESS : ", data);
+
+				},
+				error: function (e) {
+					console.log("ERROR : ", e);
+
+
+				}
+			});
+		})
+		function convertToNumber(inputString) {
+			// Loại bỏ các ký tự không phải số và dấu chấm
+			var numericPart = inputString.replace(/[^\d]/g, "");
+			// Chuyển đổi chuỗi thành số
+			return parseInt(numericPart, 10);
+		}
+		function handleSelectChange() {
+            var selectElement = document.getElementById('methodPaySelect');
+            var selectedValue = selectElement.value;
+            if(selectedValue==='1'){
+				
+			}
+        }
+		$('.btn-discount').click(function () {
+			// Tìm đến phần tử có class 'nameCode' gần nhất trong cùng khối cha với nút được nhấn
+			var discountCode = $(this).closest('.discountCode').find('.nameCode').text();
+			var result = $(this).closest('.discountCode').find('.money-discount').text();
+			// Đặt giá trị cho input mã giảm giá
+			var money=convertToNumber(result);
+			$('#nameCode').val(discountCode);
+			$('.discount-code').text(result);
+			var moneyOld=convertToNumber($('#moneyOld').text());
+			var totalMoney=moneyOld-money;
+			$('#totalMoney').text(formatPrice1(totalMoney));
+			$('#sumMoney').val(totalMoney)
+		});
+	</script>
+</body>
+
+
+<!-- Mirrored from htmldemo.net/koparion/koparion/index-4.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 09 Aug 2023 12:02:53 GMT -->
+
+</html>

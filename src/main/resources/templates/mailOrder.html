@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"  xmlns:sec="http://www.thymeleaf.org/extras/spring-security6">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+<style>
+    .code{
+        border: 1px solid #1877f2;
+        width: 120px;
+        height: 25px;
+        border-radius: 7px;
+        background: #e7f3ff;
+        text-align: center;
+        padding-top: 15px;
+        padding-bottom: 10px;
+        font-weight: bold;
+        font-size: 15px;
+        font-family: LucidaGrande,tahoma,verdana,arial,sans-serif;
+    }
+</style>
+</head>
+<body style="font-family: Helvetica Neue,Helvetica,Lucida Grande,tahoma,verdana,arial,sans-serif;">
+	<p th:text="${'Xin chào, '+name+','}"></p>
+	<p>Chúng tôi đã nhận được yêu cầu đặt hàng của bạn</p>
+	<p>Thông tin đơn hàng</p>
+	<p th:text="${'Mã đơn hàng: '+id}"></p>
+	<p th:text="${'Ngày đặt hàng: ' + #dates.format(ngaydat, 'dd-MM-yyyy')}"></p>
+	<p th:text="${'Tổng tiền: '+ #numbers.formatDecimal(tongtien, 0, 'POINT', 0, 'COMMA')+ ' VNĐ'}"></p>
+	<p th:text="${'Tình trạng đơn hàng: '+status}"></p>
+	<p>Hãy chú ý thời gian nhận hàng</p>
+	<p>Đây là email tự động vui lòng không trả lời</p>
+</body>
+</html>
